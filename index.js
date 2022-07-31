@@ -18,10 +18,11 @@ async function run() {
     try {
         await client.connect()
         const allServiceCollection = client.db("project-eventy-data-collection").collection("all-service");
+        const allReviewCollection = client.db("project-eventy-data-collection").collection("all-review");
 
 
-        app.post('/post-service', async (req, res) => {
-            const postReview = await allServiceCollection.insertOne(req.body)
+        app.post('/post-review', async (req, res) => {
+            const postReview = await allReviewCollection.insertOne(req.body)
             res.send(postReview)
           })
 
