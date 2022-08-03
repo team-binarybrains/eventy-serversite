@@ -28,6 +28,9 @@ async function run() {
     const allEventListCollection = client
       .db("project-eventy-data-collection")
       .collection("allEvent-List");
+    const allBlogsCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-Blogs");
 
     app.post("/post-review", async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body);
@@ -49,6 +52,15 @@ async function run() {
     });
 
     // EVENT LISTING END
+    // BLOGS SECTION START
+
+    app.get("/blogs", async (req, res) => {
+      const query = {};
+      const result = await allBlogsCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // BLOGS SECTION END
   } finally {
   }
 }
