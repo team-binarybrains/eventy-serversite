@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 // const { application } = require("express");
 
 const app = express();
@@ -19,6 +19,8 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+    await client.connect()
+
     await client.connect();
     const allServiceCollection = client
       .db("project-eventy-data-collection")
@@ -30,10 +32,28 @@ async function run() {
       .db("project-eventy-data-collection")
       .collection("allEvent-List");
 
-    app.post("/post-review", async (req, res) => {
-      const postReview = await allReviewCollection.insertOne(req.body);
-      res.send(postReview);
-    });
+
+
+    // get all service api
+    app.get('/services-get', async (req, res) => {
+      const getAllServices = await allServiceCollection.find({}).toArray()
+      res.send(getAllServices)
+    })
+
+    // get service filter by id
+    app.get('/single-service/:id', async (req, res) => {
+      const getSingleServiceById = await allServiceCollection.findOne({ _id: ObjectId(req.params.id) })
+      res.send(getSingleServiceById)
+    })
+
+    // review post api
+    app.post('/post-review', async (req, res) => {
+      const postReview = await allReviewCollection.insertOne(req.body)
+      res.send(postReview)
+    })
+
+
+
   } finally {
   }
 }
@@ -46,3 +66,4 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log("Listning to port", port);
 });
+
