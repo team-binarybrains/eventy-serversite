@@ -70,6 +70,9 @@ async function run() {
     });
 
     // BLOGS SECTION END
+    const allVenue = client
+      .db("project-eventy-data-collection")
+      .collection("allVenue-List");
 
     // get all service api
     app.get("/services-get", async (req, res) => {
@@ -85,7 +88,11 @@ async function run() {
       res.send(getSingleServiceById);
     });
 
-    // review post api
+    // get event venues
+    app.get("/venues", async (req, res) => {
+      const venues = await allVenue.find({}).toArray();
+      res.send(venues);
+    });
   } finally {
   }
 }
