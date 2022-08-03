@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+// const { application } = require("express");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -18,6 +19,8 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+    await client.connect();
+
     await client.connect();
     const allServiceCollection = client
       .db("project-eventy-data-collection")
@@ -67,6 +70,22 @@ async function run() {
     });
 
     // BLOGS SECTION END
+
+    // get all service api
+    app.get("/services-get", async (req, res) => {
+      const getAllServices = await allServiceCollection.find({}).toArray();
+      res.send(getAllServices);
+    });
+
+    // get service filter by id
+    app.get("/single-service/:id", async (req, res) => {
+      const getSingleServiceById = await allServiceCollection.findOne({
+        _id: ObjectId(req.params.id),
+      });
+      res.send(getSingleServiceById);
+    });
+
+    // review post api
   } finally {
   }
 }
