@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion } = require("mongodb");
-// const { application } = require("express");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -34,6 +33,17 @@ async function run() {
       const postReview = await allReviewCollection.insertOne(req.body);
       res.send(postReview);
     });
+
+    // EVENT LISTING START
+    app.get("/eventlisting", async (req, res) => {
+      const type = req.query.catagory;
+      const query = { type: type };
+      const result = await allEventListCollection.find(query).toArray();
+
+      res.send(result);
+    });
+
+    // EVENT LISTING END
   } finally {
   }
 }
