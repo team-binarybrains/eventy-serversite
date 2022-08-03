@@ -31,6 +31,45 @@ async function run() {
     const allEventListCollection = client
       .db("project-eventy-data-collection")
       .collection("allEvent-List");
+    const allBlogsCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-Blogs");
+
+    app.post("/post-review", async (req, res) => {
+      const postReview = await allReviewCollection.insertOne(req.body);
+      res.send(postReview);
+    });
+
+    // EVENT LISTING START
+    app.get("/eventlisting", async (req, res) => {
+      const type = req.query.catagory;
+      const query = { type: type };
+      const result = await allEventListCollection.find(query).toArray();
+
+      res.send(result);
+    });
+    app.get("/alleventlisting", async (req, res) => {
+      const query = {};
+      const result = await allEventListCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // EVENT LISTING END
+    // BLOGS SECTION START
+
+    app.get("/blogs", async (req, res) => {
+      const query = {};
+      const result = await allBlogsCollection.find(query).toArray();
+      res.send(result);
+    });
+    app.get("/blogsdetail/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await allBlogsCollection.findOne(query);
+      res.send(result);
+    });
+
+    // BLOGS SECTION END
     const allVenue = client
       .db("project-eventy-data-collection")
       .collection("allVenue-List");
@@ -47,12 +86,6 @@ async function run() {
         _id: ObjectId(req.params.id),
       });
       res.send(getSingleServiceById);
-    });
-
-    // review post api
-    app.post("/post-review", async (req, res) => {
-      const postReview = await allReviewCollection.insertOne(req.body);
-      res.send(postReview);
     });
 
     // get event venues
