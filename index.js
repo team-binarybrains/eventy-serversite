@@ -31,6 +31,9 @@ async function run() {
     const allEventListCollection = client
       .db("project-eventy-data-collection")
       .collection("allEvent-List");
+    const allVenue = client
+    .db("project-eventy-data-collection")
+    .collection("allVenue-List");
 
 
 
@@ -52,7 +55,11 @@ async function run() {
       res.send(postReview)
     })
 
-
+    // get event venues
+    app.get('/venues', async (req,res) => {
+      const venues = await allVenue.find().toArray();
+      res.send(venues);
+    })
 
   } finally {
   }
