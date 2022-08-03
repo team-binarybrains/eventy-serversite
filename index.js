@@ -21,12 +21,13 @@ async function run() {
     const allReviewCollection = client.db("project-eventy-data-collection").collection("all-review");
 
 
+    // get all service api
     app.get('/services-get', async (req, res) => {
       const getAllServices = await allServiceCollection.find({}).toArray()
       res.send(getAllServices)
     })
 
-
+    // review post api
     app.post('/post-review', async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body)
       res.send(postReview)
