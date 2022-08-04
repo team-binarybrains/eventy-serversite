@@ -34,6 +34,9 @@ async function run() {
     const allBlogsCollection = client
       .db("project-eventy-data-collection")
       .collection("all-Blogs");
+    const allBookingServiceCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-booking-services");
 
     app.post("/post-review", async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body);
@@ -93,6 +96,14 @@ async function run() {
       const venues = await allVenue.find({}).toArray();
       res.send(venues);
     });
+
+
+    // prost booking to database
+    app.post('/service-booking', async (req, res) => {
+      const result = await allBookingServiceCollection.insertOne(req.body)
+      res.send(result)
+    })
+
   } finally {
   }
 }
