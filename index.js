@@ -34,6 +34,9 @@ async function run() {
     const allBlogsCollection = client
       .db("project-eventy-data-collection")
       .collection("all-Blogs");
+    const allBookingServiceCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-booking-services");
 
     app.post("/post-review", async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body);
@@ -94,6 +97,12 @@ async function run() {
       res.send(venues);
     });
 
+
+    // prost booking to database
+    app.post('/service-booking', async (req, res) => {
+      const result = await allBookingServiceCollection.insertOne(req.body)
+      res.send(result)
+    })
     // get single event venue
     app.get("/venue/:id", async (req, res) => {
       const id = req.params;
