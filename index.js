@@ -103,6 +103,12 @@ async function run() {
       const result = await allBookingServiceCollection.insertOne(req.body)
       res.send(result)
     })
+    // get single event venue
+    app.get("/venue/:id", async (req, res) => {
+      const id = req.params;
+      const venue = await allVenue.findOne({_id:ObjectId(id)});
+      res.send(venue);
+    });
 
   } finally {
   }
