@@ -93,6 +93,14 @@ async function run() {
       const venues = await allVenue.find({}).toArray();
       res.send(venues);
     });
+
+    // get event venues
+    app.get("/venue/:id", async (req, res) => {
+      const id = req.params;
+      const venue = await allVenue.findOne({_id:ObjectId(id)});
+      res.send(venue);
+    });
+
   } finally {
   }
 }
