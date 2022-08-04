@@ -63,6 +63,13 @@ async function run() {
       res.send(result);
     });
 
+    // get individual event
+    app.get('/alleventlisting/:id',async (req,res)=> {
+        const {id} = req.params;
+        const event = await allEventListCollection.findOne({_id:ObjectId(id)});
+        res.send(event);
+    })
+
     // EVENT LISTING END
     // BLOGS SECTION START
 
@@ -102,7 +109,7 @@ async function run() {
 
     // get single event venue
     app.get("/venue/:id", async (req, res) => {
-      const id = req.params;
+      const {id} = req.params;
       const venue = await allVenue.findOne({ _id: ObjectId(id) });
       res.send(venue);
     });
