@@ -34,6 +34,10 @@ async function run() {
     const allBlogsCollection = client
       .db("project-eventy-data-collection")
       .collection("all-Blogs");
+    const allVenue = client
+      .db("project-eventy-data-collection")
+      .collection("allVenue-List");
+
 
     app.post("/post-review", async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body);
@@ -69,10 +73,7 @@ async function run() {
       res.send(result);
     });
 
-    // BLOGS SECTION END
-    const allVenue = client
-      .db("project-eventy-data-collection")
-      .collection("allVenue-List");
+
 
     // get all service api
     app.get("/services-get", async (req, res) => {
