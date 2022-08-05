@@ -100,7 +100,7 @@ async function run() {
       const venue = await allVenue.findOne({ _id: ObjectId(id) });
       res.send(venue);
     });
-    // get  all EventList Collection
+    // get  all EventList data
     app.get("/event-details/:id", async (req, res) => {
       const id = req.params;
       const venue = await allEventListCollection.findOne({ _id: ObjectId(id) });
