@@ -37,6 +37,13 @@ async function run() {
     const allVenue = client
       .db("project-eventy-data-collection")
       .collection("allVenue-List");
+    const allBookingServiceCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-booking-services");
+    const allBookingVenueCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-booking-venue");
+
 
 
     app.post("/post-review", async (req, res) => {
@@ -58,6 +65,13 @@ async function run() {
       res.send(result);
     });
 
+    // get individual event
+    app.get('/alleventlisting/:id',async (req,res)=> {
+        const {id} = req.params;
+        const event = await allEventListCollection.findOne({_id:ObjectId(id)});
+        res.send(event);
+    })
+
     // EVENT LISTING END
     // BLOGS SECTION START
 
@@ -72,8 +86,6 @@ async function run() {
       const result = await allBlogsCollection.findOne(query);
       res.send(result);
     });
-
-
 
     // get all service api
     app.get("/services-get", async (req, res) => {
@@ -95,6 +107,7 @@ async function run() {
       res.send(venues);
     });
 
+
     // get single event venue
     app.get("/venue/:id", async (req, res) => {
       const id = req.params;
@@ -107,6 +120,19 @@ async function run() {
       const venue = await allEventListCollection.findOne({ _id: ObjectId(id) });
       res.send(venue);
     });
+
+    // booking venue api
+    app.post('/venue-booking', async (req, res) => {
+      const bookingVenue = await allBookingVenueCollection.insertOne(req.body)
+      res.send(bookingVenue)
+    })
+
+
+    // post booking to database
+    app.post('/service-booking', async (req, res) => {
+      const result = await allBookingServiceCollection.insertOne(req.body)
+      res.send(result)
+    })
 
   } finally {
   }
