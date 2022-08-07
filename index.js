@@ -43,6 +43,9 @@ async function run() {
     const allBookingVenueCollection = client
       .db("project-eventy-data-collection")
       .collection("all-booking-venue");
+    const allCateringCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-catering");
 
 
 
@@ -50,6 +53,7 @@ async function run() {
       const postReview = await allReviewCollection.insertOne(req.body);
       res.send(postReview);
     });
+
 
     // EVENT LISTING START
     app.get("/eventlisting", async (req, res) => {
@@ -59,7 +63,7 @@ async function run() {
 
       res.send(result);
     });
-    
+
     app.get("/alleventlisting", async (req, res) => {
       const query = {};
       const result = await allEventListCollection.find(query).toArray();
@@ -67,10 +71,10 @@ async function run() {
     });
 
     // get individual event
-    app.get('/alleventlisting/:id',async (req,res)=> {
-        const {id} = req.params;
-        const event = await allEventListCollection.findOne({_id:ObjectId(id)});
-        res.send(event);
+    app.get('/alleventlisting/:id', async (req, res) => {
+      const { id } = req.params;
+      const event = await allEventListCollection.findOne({ _id: ObjectId(id) });
+      res.send(event);
     })
 
     // EVENT LISTING END
