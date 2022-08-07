@@ -148,7 +148,7 @@ async function run() {
       // var token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, {
       //   expiresIn: "40d",
       // });
-      console.log(token);
+      // console.log(token);
       res.send(result);
     });
     app.get("/allusers", async (req, res) => {
