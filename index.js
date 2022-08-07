@@ -54,6 +54,10 @@ async function run() {
       res.send(postReview);
     });
 
+    app.get("/get-catering", async (req, res) => {
+      const result = await allCateringCollection.find({}).toArray();
+      res.send(result);
+    });
 
     // EVENT LISTING START
     app.get("/eventlisting", async (req, res) => {
