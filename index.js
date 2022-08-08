@@ -72,7 +72,7 @@ async function run() {
       res.send(result);
     });
 
-
+    
     // EVENT LISTING START
     app.get("/eventlisting", async (req, res) => {
       const type = req.query.catagory;
