@@ -54,17 +54,18 @@ async function run() {
       res.send(postReview);
     });
 
+    // catering api
     app.get("/get-catering", async (req, res) => {
       const result = await allCateringCollection.find({}).toArray();
       res.send(result);
     });
+
 
     // EVENT LISTING START
     app.get("/eventlisting", async (req, res) => {
       const type = req.query.catagory;
       const query = { type: type };
       const result = await allEventListCollection.find(query).toArray();
-
       res.send(result);
     });
 
