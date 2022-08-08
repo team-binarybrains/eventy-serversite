@@ -93,7 +93,7 @@ async function run() {
       .collection("all-linen");
 
 
-      
+
     app.post("/post-review", async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body);
       res.send(postReview);
@@ -228,6 +228,7 @@ async function run() {
       const result = await userCollection.find(query).toArray();
       res.send(result);
     });
+
     app.delete("/delete-user/:id", async (req, res) => {
       const deleteSpecificUser = await userCollection.deleteOne({
         _id: ObjectId(req.params.id),
@@ -246,6 +247,8 @@ async function run() {
       const result = await allFirst4FaqQuestion.find(query).toArray();
       res.send(result);
     });
+
+    
   } finally {
   }
 }
