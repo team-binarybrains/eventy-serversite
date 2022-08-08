@@ -16,6 +16,24 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
+// IT'S THE JWT
+function varifyJwt(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    res.status(401).send({ message: "Un authorize access" });
+  }
+  const token = authHeader.split(" ")[1];
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+    if (err) {
+      return res.status(403).send({ message: "Forbidden access" });
+    }
+    req.decoded = decoded;
+    // console.log("this is decoded", decoded);
+    next();
+  });
+}
+
+// IT'S THE JWT
 
 async function run() {
   try {
@@ -47,13 +65,10 @@ async function run() {
       .db("project-eventy-data-collection")
       .collection("all-catering");
 
-
-
     app.post("/post-review", async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body);
       res.send(postReview);
     });
-
 
     // EVENT LISTING START
     app.get("/eventlisting", async (req, res) => {
@@ -71,11 +86,11 @@ async function run() {
     });
 
     // get individual event
-    app.get('/alleventlisting/:id', async (req, res) => {
+    app.get("/alleventlisting/:id", async (req, res) => {
       const { id } = req.params;
       const event = await allEventListCollection.findOne({ _id: ObjectId(id) });
       res.send(event);
-    })
+    });
 
     // EVENT LISTING END
     // BLOGS SECTION START
@@ -112,7 +127,6 @@ async function run() {
       res.send(venues);
     });
 
-
     // get single event venue
     app.get("/venue/:id", async (req, res) => {
       const id = req.params;
@@ -127,18 +141,16 @@ async function run() {
     });
 
     // booking venue api
-    app.post('/venue-booking', async (req, res) => {
-      const bookingVenue = await allBookingVenueCollection.insertOne(req.body)
-      res.send(bookingVenue)
-    })
-
+    app.post("/venue-booking", async (req, res) => {
+      const bookingVenue = await allBookingVenueCollection.insertOne(req.body);
+      res.send(bookingVenue);
+    });
 
     // post booking to database
-    app.post('/service-booking', async (req, res) => {
-      const result = await allBookingServiceCollection.insertOne(req.body)
-      res.send(result)
-    })
-
+    app.post("/service-booking", async (req, res) => {
+      const result = await allBookingServiceCollection.insertOne(req.body);
+      res.send(result);
+    });
   } finally {
   }
 }
