@@ -74,7 +74,12 @@ async function run() {
     const allAudioVisualCollection = client
       .db("project-eventy-data-collection")
       .collection("all-Audiovisual");
-
+    const allSoundLightingCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-SoundLighting");
+      const allLinenCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-linen");
 
     app.post("/post-review", async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body);
@@ -92,6 +97,19 @@ async function run() {
       const result = await allAudioVisualCollection.find({}).toArray();
       res.send(result);
     });
+
+    // get sound lighting api
+    app.get("/get-sound-lighting", async (req, res) => {
+      const result = await allSoundLightingCollection.find({}).toArray();
+      res.send(result);
+    });
+
+    // get linen api
+    app.get("/get-linen", async (req, res) => {
+      const result = await allLinenCollection.find({}).toArray();
+      res.send(result);
+    });
+
 
     // EVENT LISTING START
     app.get("/eventlisting", async (req, res) => {
