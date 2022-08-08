@@ -16,6 +16,24 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
+// IT'S THE JWT
+function varifyJwt(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    res.status(401).send({ message: "Un authorize access" });
+  }
+  const token = authHeader.split(" ")[1];
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+    if (err) {
+      return res.status(403).send({ message: "Forbidden access" });
+    }
+    req.decoded = decoded;
+    // console.log("this is decoded", decoded);
+    next();
+  });
+}
+
+// IT'S THE JWT
 
 async function run() {
   try {
@@ -43,6 +61,10 @@ async function run() {
     const allBookingVenueCollection = client
       .db("project-eventy-data-collection")
       .collection("all-booking-venue");
+
+    const userCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-users");
     const allFirst4FaqQuestion = client
       .db("project-eventy-data-collection")
       .collection("all-first4-faq-question");
@@ -52,7 +74,6 @@ async function run() {
     const allAudioVisualCollection = client
       .db("project-eventy-data-collection")
       .collection("all-Audiovisual");
-
 
 
     app.post("/post-review", async (req, res) => {
@@ -72,7 +93,6 @@ async function run() {
       res.send(result);
     });
 
-    
     // EVENT LISTING START
     app.get("/eventlisting", async (req, res) => {
       const type = req.query.catagory;
@@ -88,11 +108,11 @@ async function run() {
     });
 
     // get individual event
-    app.get('/alleventlisting/:id', async (req, res) => {
+    app.get("/alleventlisting/:id", async (req, res) => {
       const { id } = req.params;
       const event = await allEventListCollection.findOne({ _id: ObjectId(id) });
       res.send(event);
-    })
+    });
 
     // EVENT LISTING END
     // BLOGS SECTION START
@@ -129,7 +149,6 @@ async function run() {
       res.send(venues);
     });
 
-
     // get single event venue
     app.get("/venue/:id", async (req, res) => {
       const id = req.params;
@@ -144,24 +163,58 @@ async function run() {
     });
 
     // booking venue api
-    app.post('/venue-booking', async (req, res) => {
-      const bookingVenue = await allBookingVenueCollection.insertOne(req.body)
-      res.send(bookingVenue)
-    })
-
+    app.post("/venue-booking", async (req, res) => {
+      const bookingVenue = await allBookingVenueCollection.insertOne(req.body);
+      res.send(bookingVenue);
+    });
 
     // post booking to database
-    app.post('/service-booking', async (req, res) => {
-      const result = await allBookingServiceCollection.insertOne(req.body)
-      res.send(result)
-    })
+
+    app.post("/service-booking", async (req, res) => {
+      const result = await allBookingServiceCollection.insertOne(req.body);
+      res.send(result);
+    });
+    // all user start
+
+    app.put("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = req.body;
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      console.log(updateDoc);
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+      // var token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, {
+      //   expiresIn: "40d",
+      // });
+      // console.log(token);
+      res.send(result);
+    });
+    app.get("/allusers", async (req, res) => {
+      const query = {};
+      const result = await userCollection.find(query).toArray();
+      res.send(result);
+    });
+    app.delete("/delete-user/:id", async (req, res) => {
+      const deleteSpecificUser = await userCollection.deleteOne({
+        _id: ObjectId(req.params.id),
+      });
+      res.send(deleteSpecificUser);
+    });
+    // all user end
+
+    app.post("/service-booking", async (req, res) => {
+      const result = await allBookingServiceCollection.insertOne(req.body);
+      res.send(result);
+    });
 
     app.get("/allQuestion", async (req, res) => {
       const query = {};
       const result = await allFirst4FaqQuestion.find(query).toArray();
       res.send(result);
     });
-
   } finally {
   }
 }
