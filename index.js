@@ -65,6 +65,10 @@ async function run() {
       .db("project-eventy-data-collection")
       .collection("all-catering");
 
+    const allFirst4FaqQuestion = client
+      .db("project-eventy-data-collection")
+      .collection("all-first4-faq-question");
+
     app.post("/post-review", async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body);
       res.send(postReview);
@@ -147,8 +151,15 @@ async function run() {
     });
 
     // post booking to database
+
     app.post("/service-booking", async (req, res) => {
       const result = await allBookingServiceCollection.insertOne(req.body);
+      res.send(result);
+    });
+
+    app.get("/allQuestion", async (req, res) => {
+      const query = {};
+      const result = await allFirst4FaqQuestion.find(query).toArray();
       res.send(result);
     });
   } finally {
