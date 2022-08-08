@@ -65,26 +65,57 @@ async function run() {
     const userCollection = client
       .db("project-eventy-data-collection")
       .collection("all-users");
-
-    const allCateringCollection = client
-      .db("project-eventy-data-collection")
-      .collection("all-catering");
-
     const allFirst4FaqQuestion = client
       .db("project-eventy-data-collection")
       .collection("all-first4-faq-question");
+    const allCateringCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-catering");
+    const allAudioVisualCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-Audiovisual");
+    const allSoundLightingCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-SoundLighting");
+      const allLinenCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-linen");
 
     app.post("/post-review", async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body);
       res.send(postReview);
     });
 
+    // catering api
+    app.get("/get-catering", async (req, res) => {
+      const result = await allCateringCollection.find({}).toArray();
+      res.send(result);
+    });
+
+    // get audiovisual audio
+    app.get("/get-audiovisual", async (req, res) => {
+      const result = await allAudioVisualCollection.find({}).toArray();
+      res.send(result);
+    });
+
+    // get sound lighting api
+    app.get("/get-sound-lighting", async (req, res) => {
+      const result = await allSoundLightingCollection.find({}).toArray();
+      res.send(result);
+    });
+
+    // get linen api
+    app.get("/get-linen", async (req, res) => {
+      const result = await allLinenCollection.find({}).toArray();
+      res.send(result);
+    });
+
+
     // EVENT LISTING START
     app.get("/eventlisting", async (req, res) => {
       const type = req.query.catagory;
       const query = { type: type };
       const result = await allEventListCollection.find(query).toArray();
-
       res.send(result);
     });
 
@@ -116,7 +147,7 @@ async function run() {
       res.send(result);
     });
 
-    // get all service api
+    // get all sub-service api
     app.get("/services-get", async (req, res) => {
       const getAllServices = await allServiceCollection.find({}).toArray();
       res.send(getAllServices);
