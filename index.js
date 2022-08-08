@@ -16,6 +16,24 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
+// IT'S THE JWT
+function varifyJwt(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    res.status(401).send({ message: "Un authorize access" });
+  }
+  const token = authHeader.split(" ")[1];
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+    if (err) {
+      return res.status(403).send({ message: "Forbidden access" });
+    }
+    req.decoded = decoded;
+    // console.log("this is decoded", decoded);
+    next();
+  });
+}
+
+// IT'S THE JWT
 
 async function run() {
   try {
@@ -43,9 +61,18 @@ async function run() {
     const allBookingVenueCollection = client
       .db("project-eventy-data-collection")
       .collection("all-booking-venue");
+
     const userCollection = client
       .db("project-eventy-data-collection")
       .collection("all-users");
+
+    const allCateringCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-catering");
+
+    const allFirst4FaqQuestion = client
+      .db("project-eventy-data-collection")
+      .collection("all-first4-faq-question");
 
     app.post("/post-review", async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body);
@@ -129,6 +156,7 @@ async function run() {
     });
 
     // post booking to database
+
     app.post("/service-booking", async (req, res) => {
       const result = await allBookingServiceCollection.insertOne(req.body);
       res.send(result);
@@ -163,6 +191,17 @@ async function run() {
       res.send(deleteSpecificUser);
     });
     // all user end
+
+    app.post("/service-booking", async (req, res) => {
+      const result = await allBookingServiceCollection.insertOne(req.body);
+      res.send(result);
+    });
+
+    app.get("/allQuestion", async (req, res) => {
+      const query = {};
+      const result = await allFirst4FaqQuestion.find(query).toArray();
+      res.send(result);
+    });
   } finally {
   }
 }
