@@ -61,6 +61,11 @@ async function run() {
     const allBookingVenueCollection = client
       .db("project-eventy-data-collection")
       .collection("all-booking-venue");
+
+    const userCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-users");
+
     const allCateringCollection = client
       .db("project-eventy-data-collection")
       .collection("all-catering");
@@ -151,6 +156,41 @@ async function run() {
     });
 
     // post booking to database
+
+    app.post("/service-booking", async (req, res) => {
+      const result = await allBookingServiceCollection.insertOne(req.body);
+      res.send(result);
+    });
+    // all user start
+
+    app.put("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = req.body;
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      console.log(updateDoc);
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+      // var token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, {
+      //   expiresIn: "40d",
+      // });
+      // console.log(token);
+      res.send(result);
+    });
+    app.get("/allusers", async (req, res) => {
+      const query = {};
+      const result = await userCollection.find(query).toArray();
+      res.send(result);
+    });
+    app.delete("/delete-user/:id", async (req, res) => {
+      const deleteSpecificUser = await userCollection.deleteOne({
+        _id: ObjectId(req.params.id),
+      });
+      res.send(deleteSpecificUser);
+    });
+    // all user end
 
     app.post("/service-booking", async (req, res) => {
       const result = await allBookingServiceCollection.insertOne(req.body);
