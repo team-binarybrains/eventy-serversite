@@ -43,12 +43,16 @@ async function run() {
     const allBookingVenueCollection = client
       .db("project-eventy-data-collection")
       .collection("all-booking-venue");
-    const allCateringCollection = client
-      .db("project-eventy-data-collection")
-      .collection("all-catering");
     const allFirst4FaqQuestion = client
       .db("project-eventy-data-collection")
       .collection("all-first4-faq-question");
+    const allCateringCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-catering");
+    const allAudioVisualCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-Audiovisual");
+
 
 
     app.post("/post-review", async (req, res) => {
@@ -59,6 +63,12 @@ async function run() {
     // catering api
     app.get("/get-catering", async (req, res) => {
       const result = await allCateringCollection.find({}).toArray();
+      res.send(result);
+    });
+
+    // get audiovisual audio
+    app.get("/get-audiovisual", async (req, res) => {
+      const result = await allAudioVisualCollection.find({}).toArray();
       res.send(result);
     });
 
@@ -99,7 +109,7 @@ async function run() {
       res.send(result);
     });
 
-    // get all service api
+    // get all sub-service api
     app.get("/services-get", async (req, res) => {
       const getAllServices = await allServiceCollection.find({}).toArray();
       res.send(getAllServices);
