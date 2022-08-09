@@ -221,6 +221,13 @@ async function run() {
       });
       res.send(deleteSpecificUser);
     });
+    // single-user
+    app.get("/single-user/:email", async (req, res) => {
+      const email = req.params.email;
+      const filter = { email:email };
+      const result = await userCollection.findOne(filter);
+      res.send(result);
+    });
     // all user end
 
     app.post("/service-booking", async (req, res) => {
