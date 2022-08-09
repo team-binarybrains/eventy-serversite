@@ -3,7 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 // const { application } = require("express");
-
+var jwt = require("jsonwebtoken");
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -201,12 +201,15 @@ async function run() {
       const updateDoc = {
         $set: user,
       };
-      console.log(updateDoc);
+      // console.log(updateDoc);
       const result = await userCollection.updateOne(filter, updateDoc, options);
-      var token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: "40d",
-      });
-
+      const token = jwt.sign(
+        { email: email },
+        process.env.ACCESS_TOKEN_SECRET,
+        {
+          expiresIn: "40d",
+        }
+      );
       res.send({ result, token });
     });
     app.get("/allusers", async (req, res) => {
