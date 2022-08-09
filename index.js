@@ -88,11 +88,17 @@ async function run() {
       .db("project-eventy-data-collection")
       .collection("all-SoundLighting");
 
-      const allLinenCollection = client
+    const allLinenCollection = client
       .db("project-eventy-data-collection")
       .collection("all-linen");
 
+    const allDestinationCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-destination");
 
+      const allLogisticCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-logistic");
 
     app.post("/post-review", async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body);
@@ -123,6 +129,17 @@ async function run() {
       res.send(result);
     });
 
+    // get destination api
+    app.get("/get-destination", async (req, res) => {
+      const result = await allDestinationCollection.find({}).toArray();
+      res.send(result);
+    });
+
+    // get logistic api
+    app.get("/get-logistic", async (req, res) => {
+      const result = await allLogisticCollection.find({}).toArray();
+      res.send(result);
+    });
 
     // EVENT LISTING START
     app.get("/eventlisting", async (req, res) => {
@@ -248,7 +265,15 @@ async function run() {
       res.send(result);
     });
 
-    
+    // get an admin
+    // app.get("/admin/:email", varifyJwt ,async (req, res) => {
+    app.get("/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = await userCollection.findOne({ email: email });
+      const isAdmin = user?.role === "admin";
+      res.send({ admin: isAdmin });
+    });
+
   } finally {
   }
 }
