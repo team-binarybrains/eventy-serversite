@@ -235,8 +235,8 @@ async function run() {
     });
 
     // get an admin
-    // app.get("/admin/:email", varifyJwt ,async (req, res) => {
-    app.get("/admin/:email" ,async (req, res) => {
+    app.get("/admin/:email", varifyJwt ,async (req, res) => {
+    // app.get("/admin/:email" ,async (req, res) => {
       const email = req.params.email;
       const user = await userCollection.findOne({ email: email });
       const isAdmin = user?.role === "admin";
