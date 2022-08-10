@@ -80,8 +80,6 @@ async function run() {
       .db("project-eventy-data-collection")
       .collection("all-sub-services");
 
-
-
     app.post("/post-review", async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body);
       res.send(postReview);
@@ -92,7 +90,6 @@ async function run() {
       const result = await allSubServicesCollection.find({}).toArray();
       res.send(result);
     });
-
 
     // EVENT LISTING START
     app.get("/eventlisting", async (req, res) => {
