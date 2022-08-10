@@ -43,21 +43,27 @@ async function run() {
     const allServiceCollection = client
       .db("project-eventy-data-collection")
       .collection("all-service");
+
     const allReviewCollection = client
       .db("project-eventy-data-collection")
       .collection("all-review");
+
     const allEventListCollection = client
       .db("project-eventy-data-collection")
       .collection("allEvent-List");
+
     const allBlogsCollection = client
       .db("project-eventy-data-collection")
       .collection("all-Blogs");
+
     const allVenue = client
       .db("project-eventy-data-collection")
       .collection("allVenue-List");
+
     const allBookingServiceCollection = client
       .db("project-eventy-data-collection")
       .collection("all-booking-services");
+
     const allBookingVenueCollection = client
       .db("project-eventy-data-collection")
       .collection("all-booking-venue");
@@ -65,17 +71,25 @@ async function run() {
     const userCollection = client
       .db("project-eventy-data-collection")
       .collection("all-users");
+
     const allFirst4FaqQuestion = client
       .db("project-eventy-data-collection")
       .collection("all-first4-faq-question");
-  
+
+    const allSubServicesCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-sub-services");
 
     app.post("/post-review", async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body);
       res.send(postReview);
     });
 
-
+    // get sub services api
+    app.get("/get-sub-services", async (req, res) => {
+      const result = await allSubServicesCollection.find({}).toArray();
+      res.send(result);
+    });
 
     // EVENT LISTING START
     app.get("/eventlisting", async (req, res) => {
@@ -184,6 +198,7 @@ async function run() {
       const result = await userCollection.find(query).toArray();
       res.send(result);
     });
+
     app.delete("/delete-user/:id", async (req, res) => {
       const deleteSpecificUser = await userCollection.deleteOne({
         _id: ObjectId(req.params.id),
@@ -203,16 +218,14 @@ async function run() {
       res.send(result);
     });
 
-    // get an admin
 
     app.get("/admin/:email", varifyJwt, async (req, res) => {
-      // app.get("/admin/:email" ,async (req, res) => {
-
       const email = req.params.email;
       const user = await userCollection.findOne({ email: email });
       const isAdmin = user?.role === "admin";
       res.send({ admin: isAdmin });
     });
+
   } finally {
   }
 }
