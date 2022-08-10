@@ -3,7 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 // const { application } = require("express");
-
+var jwt = require("jsonwebtoken");
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -77,7 +77,7 @@ async function run() {
     const allSoundLightingCollection = client
       .db("project-eventy-data-collection")
       .collection("all-SoundLighting");
-      const allLinenCollection = client
+    const allLinenCollection = client
       .db("project-eventy-data-collection")
       .collection("all-linen");
 
@@ -109,7 +109,6 @@ async function run() {
       const result = await allLinenCollection.find({}).toArray();
       res.send(result);
     });
-
 
     // EVENT LISTING START
     app.get("/eventlisting", async (req, res) => {
@@ -202,13 +201,16 @@ async function run() {
       const updateDoc = {
         $set: user,
       };
-      console.log(updateDoc);
+      // console.log(updateDoc);
       const result = await userCollection.updateOne(filter, updateDoc, options);
-      // var token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, {
-      //   expiresIn: "40d",
-      // });
-      // console.log(token);
-      res.send(result);
+      const token = jwt.sign(
+        { email: email },
+        process.env.ACCESS_TOKEN_SECRET,
+        {
+          expiresIn: "40d",
+        }
+      );
+      res.send({ result, token });
     });
     app.get("/allusers", async (req, res) => {
       const query = {};
@@ -239,6 +241,17 @@ async function run() {
       const query = {};
       const result = await allFirst4FaqQuestion.find(query).toArray();
       res.send(result);
+    });
+
+    // get an admin
+
+    app.get("/admin/:email", varifyJwt, async (req, res) => {
+      // app.get("/admin/:email" ,async (req, res) => {
+
+      const email = req.params.email;
+      const user = await userCollection.findOne({ email: email });
+      const isAdmin = user?.role === "admin";
+      res.send({ admin: isAdmin });
     });
   } finally {
   }
