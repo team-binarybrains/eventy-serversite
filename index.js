@@ -76,70 +76,23 @@ async function run() {
       .db("project-eventy-data-collection")
       .collection("all-first4-faq-question");
 
-    const allCateringCollection = client
+      const allSubServicesCollection = client
       .db("project-eventy-data-collection")
-      .collection("all-catering");
+      .collection("all-sub-services");
 
-    const allAudioVisualCollection = client
-      .db("project-eventy-data-collection")
-      .collection("all-Audiovisual");
-
-    const allSoundLightingCollection = client
-      .db("project-eventy-data-collection")
-      .collection("all-SoundLighting");
-
-    const allLinenCollection = client
-      .db("project-eventy-data-collection")
-      .collection("all-linen");
-
-    const allDestinationCollection = client
-      .db("project-eventy-data-collection")
-      .collection("all-destination");
-
-      const allLogisticCollection = client
-      .db("project-eventy-data-collection")
-      .collection("all-logistic");
 
     app.post("/post-review", async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body);
       res.send(postReview);
     });
 
-    // catering api
-    app.get("/get-catering", async (req, res) => {
-      const result = await allCateringCollection.find({}).toArray();
+    // get sub services api
+    app.get("/get-sub-services", async (req, res) => {
+      const result = await allSubServicesCollection.find({}).toArray();
       res.send(result);
     });
 
-    // get audiovisual audio
-    app.get("/get-audiovisual", async (req, res) => {
-      const result = await allAudioVisualCollection.find({}).toArray();
-      res.send(result);
-    });
 
-    // get sound lighting api
-    app.get("/get-sound-lighting", async (req, res) => {
-      const result = await allSoundLightingCollection.find({}).toArray();
-      res.send(result);
-    });
-
-    // get linen api
-    app.get("/get-linen", async (req, res) => {
-      const result = await allLinenCollection.find({}).toArray();
-      res.send(result);
-    });
-
-    // get destination api
-    app.get("/get-destination", async (req, res) => {
-      const result = await allDestinationCollection.find({}).toArray();
-      res.send(result);
-    });
-
-    // get logistic api
-    app.get("/get-logistic", async (req, res) => {
-      const result = await allLogisticCollection.find({}).toArray();
-      res.send(result);
-    });
 
     // EVENT LISTING START
     app.get("/eventlisting", async (req, res) => {
