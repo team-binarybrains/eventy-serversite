@@ -68,48 +68,19 @@ async function run() {
     const allFirst4FaqQuestion = client
       .db("project-eventy-data-collection")
       .collection("all-first4-faq-question");
-    const allCateringCollection = client
-      .db("project-eventy-data-collection")
-      .collection("all-catering");
-    const allAudioVisualCollection = client
-      .db("project-eventy-data-collection")
-      .collection("all-Audiovisual");
-    const allSoundLightingCollection = client
-      .db("project-eventy-data-collection")
-      .collection("all-SoundLighting");
-    const allLinenCollection = client
-      .db("project-eventy-data-collection")
-      .collection("all-linen");
-    const allTicketBookingCollection = client
-      .db("project-eventy-data-collection")
-      .collection("all-ticket-booking");
+    const allSubServicesCollection = client
+    .db("project-eventy-data-collection")
+    .collection("all-sub-services");
+
+
 
     app.post("/post-review", async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body);
       res.send(postReview);
     });
 
-    // catering api
-    app.get("/get-catering", async (req, res) => {
-      const result = await allCateringCollection.find({}).toArray();
-      res.send(result);
-    });
-
-    // get audiovisual audio
-    app.get("/get-audiovisual", async (req, res) => {
-      const result = await allAudioVisualCollection.find({}).toArray();
-      res.send(result);
-    });
-
-    // get sound lighting api
-    app.get("/get-sound-lighting", async (req, res) => {
-      const result = await allSoundLightingCollection.find({}).toArray();
-      res.send(result);
-    });
-
-    // get linen api
-    app.get("/get-linen", async (req, res) => {
-      const result = await allLinenCollection.find({}).toArray();
+    app.get("/get-sub-services", async (req, res) => {
+      const result = await allSubServicesCollection.find({}).toArray();
       res.send(result);
     });
 
@@ -189,13 +160,34 @@ async function run() {
     });
 
     // post booking to database
-
     app.post("/service-booking", async (req, res) => {
       const result = await allBookingServiceCollection.insertOne(req.body);
       res.send(result);
     });
-    // all user start
 
+    app.get("/booking-info/:email", varifyJwt, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      const email = req.params.email;
+      if (email == decodedEmail) {
+        const query = { user_email: email };
+        const myBookings = await allBookingServiceCollection.find(query).toArray();
+        res.send(myBookings);
+      }
+      else {
+        res.status(403).send({ message: "Access denied! Forbidden access" });
+      }
+    })
+
+
+     // cancle service booking api
+     app.delete("/delete-booking/:id", async (req, res) => {
+      const deleteSpecificBooking = await allBookingServiceCollection.deleteOne({
+        _id: ObjectId(req.params.id),
+      });
+      res.send(deleteSpecificBooking);
+    });
+
+    // all user start
     app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
       const user = req.body;
