@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 // const { application } = require("express");
 var jwt = require("jsonwebtoken");
 const app = express();
@@ -88,8 +89,9 @@ async function run() {
     });
 
     // get sub services api
-    app.get("/get-sub-services", async (req, res) => {
-      const result = await allSubServicesCollection.find({}).toArray();
+    app.get("/get-sub-services/:type", async (req, res) => {
+      const {type} = req.params
+      const result = await allSubServicesCollection.find({type}).toArray();
       res.send(result);
     });
 
@@ -254,6 +256,8 @@ async function run() {
       const isAdmin = user?.role === "admin";
       res.send({ admin: isAdmin });
     });
+
+   
 
   } finally {
   }
