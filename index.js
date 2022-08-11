@@ -80,7 +80,7 @@ async function run() {
       .db("project-eventy-data-collection")
       .collection("all-sub-services");
 
-      
+
 
     app.post("/post-review", async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body);
@@ -169,13 +169,34 @@ async function run() {
     });
 
     // post booking to database
-
     app.post("/service-booking", async (req, res) => {
       const result = await allBookingServiceCollection.insertOne(req.body);
       res.send(result);
     });
-    // all user start
 
+    app.get("/booking-info/:email", varifyJwt, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      const email = req.params.email;
+      if (email == decodedEmail) {
+        const query = { user_email: email };
+        const myBookings = await allBookingServiceCollection.find(query).toArray();
+        res.send(myBookings);
+      }
+      else {
+        res.status(403).send({ message: "Access denied! Forbidden access" });
+      }
+    })
+
+
+     // cancle service booking api
+     app.delete("/delete-booking/:id", async (req, res) => {
+      const deleteSpecificBooking = await allBookingServiceCollection.deleteOne({
+        _id: ObjectId(req.params.id),
+      });
+      res.send(deleteSpecificBooking);
+    });
+
+    // all user start
     app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
       const user = req.body;
