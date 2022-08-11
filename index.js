@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 // const { application } = require("express");
 var jwt = require("jsonwebtoken");
 const app = express();
@@ -80,8 +81,10 @@ async function run() {
       res.send(postReview);
     });
 
-    app.get("/get-sub-services", async (req, res) => {
-      const result = await allSubServicesCollection.find({}).toArray();
+    // get sub services api
+    app.get("/get-sub-services/:type", async (req, res) => {
+      const {type} = req.params
+      const result = await allSubServicesCollection.find({type}).toArray();
       res.send(result);
     });
     
@@ -166,6 +169,12 @@ async function run() {
       res.send(result);
     });
 
+    app.get('/get-all-booking-info', async (req, res)=>{
+      const bookingInfoAdmin = await allBookingServiceCollection.find({}).toArray()
+      res.send(bookingInfoAdmin)
+    })
+
+    // booking infor for user, filter by email
     app.get("/booking-info/:email", varifyJwt, async (req, res) => {
       const decodedEmail = req.decoded.email;
       const email = req.params.email;
@@ -181,7 +190,7 @@ async function run() {
 
 
      // cancle service booking api
-     app.delete("/delete-booking/:id", async (req, res) => {
+     app.delete("/delete-booking/:id", varifyJwt, async (req, res) => {
       const deleteSpecificBooking = await allBookingServiceCollection.deleteOne({
         _id: ObjectId(req.params.id),
       });
