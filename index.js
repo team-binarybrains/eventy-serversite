@@ -80,6 +80,10 @@ async function run() {
       .db("project-eventy-data-collection")
       .collection("all-sub-services");
 
+    const writeAComment = client
+      .db("project-eventy-data-collection")
+      .collection("comment");
+
       
 
     app.post("/post-review", async (req, res) => {
@@ -227,6 +231,20 @@ async function run() {
       const isAdmin = user?.role === "admin";
       res.send({ admin: isAdmin });
     });
+     
+  //  write a comment 
+  app.post("/comment", async (req, res) => {
+  const newServices = req.body;
+  const result = await writeAComment.insertOne(newServices);
+  res.send(result);
+  });
+
+  app.get("/comment", async (req, res) => {
+    const query = {};
+    const cursor = writeAComment.find(query);
+    const services = await cursor.toArray();
+    res.send(services);
+  });
 
   } finally {
   }
