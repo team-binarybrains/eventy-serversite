@@ -80,9 +80,9 @@ async function run() {
     const allLinenCollection = client
       .db("project-eventy-data-collection")
       .collection("all-linen");
-    const allBookingCollection = client
+    const allTicketBookingCollection = client
       .db("project-eventy-data-collection")
-      .collection("all-booking");
+      .collection("all-ticket-booking");
 
     app.post("/post-review", async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body);
@@ -249,6 +249,21 @@ async function run() {
       const isAdmin = user?.role === "admin";
       res.send({ admin: isAdmin });
     });
+
+    // individual user's ticket booking put method
+    app.put("/ticket-booking/:uid",async (req,res)=> {
+        const {uid} = req.params;
+        const {booking} = req.body;
+        const result = await allTicketBookingCollection.updateOne({userId:uid},{$set:booking},{upsert:true});
+        res.send({success:result?.acknowledged});
+    })
+
+    // individual user's ticket booking get method
+    app.get("/ticket-booking/:uid",async (req,res)=> {
+        const {uid} = req.params;
+        const result = await allTicketBookingCollection.findOne({userId:uid});
+        res.send(result);
+    })
   } finally {
   }
 }
