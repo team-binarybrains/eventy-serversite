@@ -80,7 +80,9 @@ async function run() {
     const allLinenCollection = client
       .db("project-eventy-data-collection")
       .collection("all-linen");
-    
+    const allBookingCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-booking");
 
     app.post("/post-review", async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body);
