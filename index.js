@@ -90,8 +90,8 @@ async function run() {
 
     // get sub services api
     app.get("/get-sub-services/:type", async (req, res) => {
-      const {type} = req.params
-      const result = await allSubServicesCollection.find({type}).toArray();
+      const { type } = req.params
+      const result = await allSubServicesCollection.find({ type }).toArray();
       res.send(result);
     });
 
@@ -176,7 +176,7 @@ async function run() {
       res.send(result);
     });
 
-    app.get('/get-all-booking-info', async (req, res)=>{
+    app.get('/get-all-booking-info', async (req, res) => {
       const bookingInfoAdmin = await allBookingServiceCollection.find({}).toArray()
       res.send(bookingInfoAdmin)
     })
@@ -196,8 +196,8 @@ async function run() {
     })
 
 
-     // cancle service booking api
-     app.delete("/delete-booking/:id", varifyJwt, async (req, res) => {
+    // cancle service booking api
+    app.delete("/delete-booking/:id", varifyJwt, async (req, res) => {
       const deleteSpecificBooking = await allBookingServiceCollection.deleteOne({
         _id: ObjectId(req.params.id),
       });
@@ -257,7 +257,29 @@ async function run() {
       res.send({ admin: isAdmin });
     });
 
-   
+
+    // get product filter by id for payment
+    app.get('/payment/:id',  async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: id };
+      const booking = await allBookingServiceCollection.findOne(query);
+      res.send(booking)
+    })
+
+      // payment
+    app.post('/create-payment-intent', async (req, res) => {
+      const service = req.body
+      console.log(service);
+      const totalPrice = parseInt(service?.eventPrice) + parseInt(service?.price)
+      console.log(totalPrice);
+      const amount = parseInt(totalPrice) * 100
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: 'usd',
+        payment_method_types: ['card']
+      })
+      res.send({ clientSecret: paymentIntent.client_secret })
+    })
 
   } finally {
   }
