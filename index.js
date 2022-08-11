@@ -174,6 +174,12 @@ async function run() {
       res.send(result);
     });
 
+    app.get('/get-all-booking-info', async (req, res)=>{
+      const bookingInfoAdmin = await allBookingServiceCollection.find({}).toArray()
+      res.send(bookingInfoAdmin)
+    })
+
+    // booking infor for user, filter by email
     app.get("/booking-info/:email", varifyJwt, async (req, res) => {
       const decodedEmail = req.decoded.email;
       const email = req.params.email;
