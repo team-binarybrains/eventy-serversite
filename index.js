@@ -83,7 +83,7 @@ async function run() {
       const result = await allSubServicesCollection.find({}).toArray();
       res.send(result);
     });
-
+    
     // EVENT LISTING START
     app.get("/eventlisting", async (req, res) => {
       const type = req.query.catagory;
