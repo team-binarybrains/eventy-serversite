@@ -61,7 +61,6 @@ async function run() {
     const allBookingVenueCollection = client
       .db("project-eventy-data-collection")
       .collection("all-booking-venue");
-
     const userCollection = client
       .db("project-eventy-data-collection")
       .collection("all-users");
@@ -71,7 +70,9 @@ async function run() {
     const allSubServicesCollection = client
     .db("project-eventy-data-collection")
     .collection("all-sub-services");
-
+    const allTicketBookingCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-ticket-booking");
 
 
     app.post("/post-review", async (req, res) => {
@@ -241,17 +242,17 @@ async function run() {
     });
 
     // individual user's ticket booking put method
-    app.put("/ticket-booking/:uid",async (req,res)=> {
-        const {uid} = req.params;
+    app.put("/ticket-booking/:id",async (req,res)=> {
+        const {id} = req.params;
         const {booking} = req.body;
-        const result = await allTicketBookingCollection.updateOne({userId:uid},{$set:booking},{upsert:true});
+        const result = await allTicketBookingCollection.updateOne({bookingId:id},{$set:booking},{upsert:true});
         res.send({success:result?.acknowledged});
     })
 
     // individual user's ticket booking get method
-    app.get("/ticket-booking/:uid",async (req,res)=> {
-        const {uid} = req.params;
-        const result = await allTicketBookingCollection.findOne({userId:uid});
+    app.get("/ticket-booking/:id",async (req,res)=> {
+        const {id} = req.params;
+        const result = await allTicketBookingCollection.findOne({bookingId:id});
         res.send(result);
     })
   } finally {
