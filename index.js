@@ -195,7 +195,7 @@ async function run() {
 
 
      // cancle service booking api
-     app.delete("/delete-booking/:id", async (req, res) => {
+     app.delete("/delete-booking/:id", varifyJwt, async (req, res) => {
       const deleteSpecificBooking = await allBookingServiceCollection.deleteOne({
         _id: ObjectId(req.params.id),
       });
