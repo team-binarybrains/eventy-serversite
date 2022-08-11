@@ -264,6 +264,27 @@ async function run() {
         const result = await allTicketBookingCollection.findOne({bookingId:id});
         res.send(result);
     })
+
+    // individual tickets get method by userId
+    app.get("/user-booked-ticket/:id",async (req,res)=> {
+      const {id} = req.params;
+      const result = await allTicketBookingCollection.find({userId:id}).toArray();
+      res.send(result);
+    })
+
+    // delete booked ticket api by eventId
+    app.delete("/delete-booked-ticket/:id", async (req, res) => {
+      const {id} = req.params;
+      const deleted = await allTicketBookingCollection.deleteOne({eventId:id});
+      res.send(deleted);
+    });
+    
+    // individual booked event get method by eventId
+    app.get("/event-booked-ticket/:id",async (req,res)=> {
+      const {id} = req.params;
+      const result = await allTicketBookingCollection.find({eventId:id}).toArray();
+      res.send(result);
+    })
   } finally {
   }
 }
