@@ -69,8 +69,8 @@ async function run() {
       .db("project-eventy-data-collection")
       .collection("all-first4-faq-question");
     const allSubServicesCollection = client
-    .db("project-eventy-data-collection")
-    .collection("all-sub-services");
+      .db("project-eventy-data-collection")
+      .collection("all-sub-services");
     const allTicketBookingCollection = client
       .db("project-eventy-data-collection")
       .collection("all-ticket-booking");
@@ -91,7 +91,7 @@ async function run() {
       const result = await allSubServicesCollection.find({ type }).toArray();
       res.send(result);
     });
-    
+
     // EVENT LISTING START
     app.get("/eventlisting", async (req, res) => {
       const type = req.query.catagory;
@@ -154,6 +154,7 @@ async function run() {
       const venue = await allVenue.findOne({ _id: ObjectId(id) });
       res.send(venue);
     });
+
     // get  all EventList data
     app.get("/event-details/:id", async (req, res) => {
       const id = req.params;
@@ -172,6 +173,7 @@ async function run() {
       const result = await allBookingServiceCollection.insertOne(req.body);
       res.send(result);
     });
+
 
     app.get('/get-all-booking-info', async (req, res) => {
       const bookingInfoAdmin = await allBookingServiceCollection.find({}).toArray()
@@ -234,10 +236,7 @@ async function run() {
     });
     // all user end
 
-    app.post("/service-booking", async (req, res) => {
-      const result = await allBookingServiceCollection.insertOne(req.body);
-      res.send(result);
-    });
+
 
     app.get("/allQuestion", async (req, res) => {
       const query = {};
@@ -253,24 +252,17 @@ async function run() {
       const isAdmin = user?.role === "admin";
       res.send({ admin: isAdmin });
     });
-     
-  //  write a comment 
-  app.post("/comment", async (req, res) => {
-  const newServices = req.body;
-  const result = await writeAComment.insertOne(newServices);
-  res.send(result);
-  });
 
 
     // get product filter by id for payment
-    app.get('/payment/:id',  async (req, res) => {
+    app.get('/payment/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: id };
       const booking = await allBookingServiceCollection.findOne(query);
       res.send(booking)
     })
 
-      // payment
+    // payment
     // app.post('/create-payment-intent', async (req, res) => {
     //   const service = req.body
     //   console.log(service);
@@ -284,46 +276,55 @@ async function run() {
     //   })
     //   res.send({ clientSecret: paymentIntent.client_secret })
     // })
-  app.get("/comment", async (req, res) => {
-    const query = {};
-    const cursor = writeAComment.find(query);
-    const services = await cursor.toArray();
-    res.send(services);
-  });
+
+
+    app.get("/comment", async (req, res) => {
+      const query = {};
+      const cursor = writeAComment.find(query);
+      const services = await cursor.toArray();
+      res.send(services);
+    });
+
+    //  write a comment 
+    app.post("/comment", async (req, res) => {
+      const newServices = req.body;
+      const result = await writeAComment.insertOne(newServices);
+      res.send(result);
+    });
 
     // individual user's ticket booking put method
-    app.put("/ticket-booking/:id",async (req,res)=> {
-        const {id} = req.params;
-        const {booking} = req.body;
-        const result = await allTicketBookingCollection.updateOne({bookingId:id},{$set:booking},{upsert:true});
-        res.send({success:result?.acknowledged});
+    app.put("/ticket-booking/:id", async (req, res) => {
+      const { id } = req.params;
+      const { booking } = req.body;
+      const result = await allTicketBookingCollection.updateOne({ bookingId: id }, { $set: booking }, { upsert: true });
+      res.send({ success: result?.acknowledged });
     })
 
     // individual user's ticket booking get method
-    app.get("/ticket-booking/:id",async (req,res)=> {
-        const {id} = req.params;
-        const result = await allTicketBookingCollection.findOne({bookingId:id});
-        res.send(result);
+    app.get("/ticket-booking/:id", async (req, res) => {
+      const { id } = req.params;
+      const result = await allTicketBookingCollection.findOne({ bookingId: id });
+      res.send(result);
     })
 
     // individual tickets get method by userId
-    app.get("/user-booked-ticket/:id",async (req,res)=> {
-      const {id} = req.params;
-      const result = await allTicketBookingCollection.find({userId:id}).toArray();
+    app.get("/user-booked-ticket/:id", async (req, res) => {
+      const { id } = req.params;
+      const result = await allTicketBookingCollection.find({ userId: id }).toArray();
       res.send(result);
     })
 
     // delete booked ticket api by eventId
     app.delete("/delete-booked-ticket/:id", async (req, res) => {
-      const {id} = req.params;
-      const deleted = await allTicketBookingCollection.deleteOne({eventId:id});
+      const { id } = req.params;
+      const deleted = await allTicketBookingCollection.deleteOne({ eventId: id });
       res.send(deleted);
     });
-    
+
     // individual booked event get method by eventId
-    app.get("/event-booked-ticket/:id",async (req,res)=> {
-      const {id} = req.params;
-      const result = await allTicketBookingCollection.find({eventId:id}).toArray();
+    app.get("/event-booked-ticket/:id", async (req, res) => {
+      const { id } = req.params;
+      const result = await allTicketBookingCollection.find({ eventId: id }).toArray();
       res.send(result);
     })
   } finally {
