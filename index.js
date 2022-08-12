@@ -44,43 +44,40 @@ async function run() {
     const allServiceCollection = client
       .db("project-eventy-data-collection")
       .collection("all-service");
-
     const allReviewCollection = client
       .db("project-eventy-data-collection")
       .collection("all-review");
-
     const allEventListCollection = client
       .db("project-eventy-data-collection")
       .collection("allEvent-List");
-
     const allBlogsCollection = client
       .db("project-eventy-data-collection")
       .collection("all-Blogs");
-
     const allVenue = client
       .db("project-eventy-data-collection")
       .collection("allVenue-List");
-
     const allBookingServiceCollection = client
       .db("project-eventy-data-collection")
       .collection("all-booking-services");
-
     const allBookingVenueCollection = client
       .db("project-eventy-data-collection")
       .collection("all-booking-venue");
-
     const userCollection = client
       .db("project-eventy-data-collection")
       .collection("all-users");
-
     const allFirst4FaqQuestion = client
       .db("project-eventy-data-collection")
       .collection("all-first4-faq-question");
-
     const allSubServicesCollection = client
+    .db("project-eventy-data-collection")
+    .collection("all-sub-services");
+    const allTicketBookingCollection = client
       .db("project-eventy-data-collection")
-      .collection("all-sub-services");
+      .collection("all-ticket-booking");
 
+    const writeAComment = client
+      .db("project-eventy-data-collection")
+      .collection("comment");
 
 
     app.post("/post-review", async (req, res) => {
@@ -94,7 +91,7 @@ async function run() {
       const result = await allSubServicesCollection.find({ type }).toArray();
       res.send(result);
     });
-
+    
     // EVENT LISTING START
     app.get("/eventlisting", async (req, res) => {
       const type = req.query.catagory;
@@ -229,7 +226,6 @@ async function run() {
       const result = await userCollection.find(query).toArray();
       res.send(result);
     });
-
     app.delete("/delete-user/:id", async (req, res) => {
       const deleteSpecificUser = await userCollection.deleteOne({
         _id: ObjectId(req.params.id),
@@ -249,6 +245,7 @@ async function run() {
       res.send(result);
     });
 
+    // get an admin
 
     app.get("/admin/:email", varifyJwt, async (req, res) => {
       const email = req.params.email;
@@ -256,6 +253,13 @@ async function run() {
       const isAdmin = user?.role === "admin";
       res.send({ admin: isAdmin });
     });
+     
+  //  write a comment 
+  app.post("/comment", async (req, res) => {
+  const newServices = req.body;
+  const result = await writeAComment.insertOne(newServices);
+  res.send(result);
+  });
 
 
     // get product filter by id for payment
@@ -280,7 +284,48 @@ async function run() {
     //   })
     //   res.send({ clientSecret: paymentIntent.client_secret })
     // })
+  app.get("/comment", async (req, res) => {
+    const query = {};
+    const cursor = writeAComment.find(query);
+    const services = await cursor.toArray();
+    res.send(services);
+  });
 
+    // individual user's ticket booking put method
+    app.put("/ticket-booking/:id",async (req,res)=> {
+        const {id} = req.params;
+        const {booking} = req.body;
+        const result = await allTicketBookingCollection.updateOne({bookingId:id},{$set:booking},{upsert:true});
+        res.send({success:result?.acknowledged});
+    })
+
+    // individual user's ticket booking get method
+    app.get("/ticket-booking/:id",async (req,res)=> {
+        const {id} = req.params;
+        const result = await allTicketBookingCollection.findOne({bookingId:id});
+        res.send(result);
+    })
+
+    // individual tickets get method by userId
+    app.get("/user-booked-ticket/:id",async (req,res)=> {
+      const {id} = req.params;
+      const result = await allTicketBookingCollection.find({userId:id}).toArray();
+      res.send(result);
+    })
+
+    // delete booked ticket api by eventId
+    app.delete("/delete-booked-ticket/:id", async (req, res) => {
+      const {id} = req.params;
+      const deleted = await allTicketBookingCollection.deleteOne({eventId:id});
+      res.send(deleted);
+    });
+    
+    // individual booked event get method by eventId
+    app.get("/event-booked-ticket/:id",async (req,res)=> {
+      const {id} = req.params;
+      const result = await allTicketBookingCollection.find({eventId:id}).toArray();
+      res.send(result);
+    })
   } finally {
   }
 }
