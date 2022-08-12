@@ -44,36 +44,47 @@ async function run() {
     const allServiceCollection = client
       .db("project-eventy-data-collection")
       .collection("all-service");
+
     const allReviewCollection = client
       .db("project-eventy-data-collection")
       .collection("all-review");
+
     const allEventListCollection = client
       .db("project-eventy-data-collection")
       .collection("allEvent-List");
+
     const allBlogsCollection = client
       .db("project-eventy-data-collection")
       .collection("all-Blogs");
+
     const allVenue = client
       .db("project-eventy-data-collection")
       .collection("allVenue-List");
+
     const allBookingServiceCollection = client
       .db("project-eventy-data-collection")
       .collection("all-booking-services");
+
     const allBookingVenueCollection = client
       .db("project-eventy-data-collection")
       .collection("all-booking-venue");
+
     const userCollection = client
       .db("project-eventy-data-collection")
       .collection("all-users");
+
     const allFirst4FaqQuestion = client
       .db("project-eventy-data-collection")
       .collection("all-first4-faq-question");
+
     const allSubServicesCollection = client
       .db("project-eventy-data-collection")
       .collection("all-sub-services");
+
     const allTicketBookingCollection = client
       .db("project-eventy-data-collection")
       .collection("all-ticket-booking");
+
     const writeAComment = client
       .db("project-eventy-data-collection")
       .collection("comment");
@@ -195,10 +206,8 @@ async function run() {
 
 
     // cancle service booking api
-    app.delete("/delete-booking/:id", varifyJwt, async (req, res) => {
-      const deleteSpecificBooking = await allBookingServiceCollection.deleteOne({
-        _id: ObjectId(req.params.id),
-      });
+    app.delete("/delete-booking/:id", async (req, res) => {
+      const deleteSpecificBooking = await allBookingServiceCollection.deleteOne({_id: req.params.id});
       res.send(deleteSpecificBooking);
     });
 
