@@ -74,7 +74,6 @@ async function run() {
     const allTicketBookingCollection = client
       .db("project-eventy-data-collection")
       .collection("all-ticket-booking");
-
     const writeAComment = client
       .db("project-eventy-data-collection")
       .collection("comment");
@@ -245,7 +244,6 @@ async function run() {
     });
 
     // get an admin
-
     app.get("/admin/:email", varifyJwt, async (req, res) => {
       const email = req.params.email;
       const user = await userCollection.findOne({ email: email });
