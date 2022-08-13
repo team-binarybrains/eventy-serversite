@@ -282,10 +282,17 @@ async function run() {
       res.send({ clientSecret: paymentIntent.client_secret })
     })
 
-
+    // get individual blogs comment
     app.get("/comment/:blogId", async (req, res) => {
       const {blogId} = req.params;
       const comments = await allCommentCollection.find({blogId:blogId}).toArray();
+      res.send(comments);
+    });
+
+    // get individual blogs comment
+    app.get("/my-comment/:commentId", async (req, res) => {
+      const {commentId} = req.params;
+      const comments = await allCommentCollection.find({commentId:commentId}).toArray();
       res.send(comments);
     });
 
