@@ -293,10 +293,10 @@ async function run() {
     });
 
     //  write a comment 
-    app.post("/comment", async (req, res) => {
+    app.put("/comment", async (req, res) => {
       const newServices = req.body;
-      const result = await writeAComment.insertOne(newServices);
-      res.send(result);
+      const result = await writeAComment.updateOne({ uid: newServices?.uid }, { $set: newServices }, { upsert: true });
+      res.send({ success: result?.acknowledged });
     });
 
     // individual user's ticket booking put method
