@@ -85,9 +85,9 @@ async function run() {
       .db("project-eventy-data-collection")
       .collection("all-ticket-booking");
 
-    const writeAComment = client
+    const allCommentCollection = client
       .db("project-eventy-data-collection")
-      .collection("comment");
+      .collection("all-comment-collection");
 
 
     app.post("/post-review", async (req, res) => {
@@ -285,17 +285,16 @@ async function run() {
     // })
 
 
-    app.get("/comment", async (req, res) => {
-      const query = {};
-      const cursor = writeAComment.find(query);
-      const services = await cursor.toArray();
-      res.send(services);
+    app.get("/comment/:blogId", async (req, res) => {
+      const {blogId} = req.params;
+      const comments = await allCommentCollection.find({blogId:blogId}).toArray();
+      res.send(comments);
     });
 
     //  write a comment 
     app.put("/comment", async (req, res) => {
       const newServices = req.body;
-      const result = await writeAComment.updateOne({ uid: newServices?.uid }, { $set: newServices }, { upsert: true });
+      const result = await allCommentCollection.updateOne({ commentId: newServices?.commentId }, { $set: newServices }, { upsert: true });
       res.send({ success: result?.acknowledged });
     });
 
