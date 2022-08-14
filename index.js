@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 // const { application } = require("express");
 var jwt = require("jsonwebtoken");
 const app = express();
@@ -80,11 +81,14 @@ async function run() {
       .db("project-eventy-data-collection")
       .collection("all-sub-services");
 
-    const writeAComment = client
+    const allTicketBookingCollection = client
       .db("project-eventy-data-collection")
-      .collection("comment");
+      .collection("all-ticket-booking");
 
-      
+    const allCommentCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-comment-collection");
+
 
     app.post("/post-review", async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body);
@@ -92,8 +96,9 @@ async function run() {
     });
 
     // get sub services api
-    app.get("/get-sub-services", async (req, res) => {
-      const result = await allSubServicesCollection.find({}).toArray();
+    app.get("/get-sub-services/:type", async (req, res) => {
+      const { type } = req.params
+      const result = await allSubServicesCollection.find({ type }).toArray();
       res.send(result);
     });
 
@@ -159,6 +164,7 @@ async function run() {
       const venue = await allVenue.findOne({ _id: ObjectId(id) });
       res.send(venue);
     });
+
     // get  all EventList data
     app.get("/event-details/:id", async (req, res) => {
       const id = req.params;
@@ -173,13 +179,39 @@ async function run() {
     });
 
     // post booking to database
-
     app.post("/service-booking", async (req, res) => {
       const result = await allBookingServiceCollection.insertOne(req.body);
       res.send(result);
     });
-    // all user start
 
+
+    app.get('/get-all-booking-info', async (req, res) => {
+      const bookingInfoAdmin = await allBookingServiceCollection.find({}).toArray()
+      res.send(bookingInfoAdmin)
+    })
+
+    // booking infor for user, filter by email
+    app.get("/booking-info/:email", varifyJwt, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      const email = req.params.email;
+      if (email == decodedEmail) {
+        const query = { user_email: email };
+        const myBookings = await allBookingServiceCollection.find(query).toArray();
+        res.send(myBookings);
+      }
+      else {
+        res.status(403).send({ message: "Access denied! Forbidden access" });
+      }
+    })
+
+
+    // cancle service booking api
+    app.delete("/delete-booking/:id", async (req, res) => {
+      const deleteSpecificBooking = await allBookingServiceCollection.deleteOne({_id: req.params.id});
+      res.send(deleteSpecificBooking);
+    });
+
+    // all user start
     app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
       const user = req.body;
@@ -204,7 +236,6 @@ async function run() {
       const result = await userCollection.find(query).toArray();
       res.send(result);
     });
-
     app.delete("/delete-user/:id", async (req, res) => {
       const deleteSpecificUser = await userCollection.deleteOne({
         _id: ObjectId(req.params.id),
@@ -213,10 +244,7 @@ async function run() {
     });
     // all user end
 
-    app.post("/service-booking", async (req, res) => {
-      const result = await allBookingServiceCollection.insertOne(req.body);
-      res.send(result);
-    });
+
 
     app.get("/allQuestion", async (req, res) => {
       const query = {};
@@ -224,28 +252,92 @@ async function run() {
       res.send(result);
     });
 
-
+    // get an admin
     app.get("/admin/:email", varifyJwt, async (req, res) => {
       const email = req.params.email;
       const user = await userCollection.findOne({ email: email });
       const isAdmin = user?.role === "admin";
       res.send({ admin: isAdmin });
     });
-     
-  //  write a comment 
-  app.post("/comment", async (req, res) => {
-  const newServices = req.body;
-  const result = await writeAComment.insertOne(newServices);
-  res.send(result);
-  })
 
-  app.get("/comment", async (req, res) => {
-    const query = {};
-    const cursor = writeAComment.find(query);
-    const services = await cursor.toArray();
-    res.send(services);
-  });
 
+    // get product filter by id for payment
+    app.get('/payment/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: id };
+      const booking = await allBookingServiceCollection.findOne(query);
+      res.send(booking)
+    })
+
+    // payment
+    app.post('/create-payment-intent', async (req, res) => {
+      const service = req.body
+      const totalPrice = service?.totalPrice
+      const amount = parseInt(totalPrice) * 100
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: 'usd',
+        payment_method_types: ['card']
+      })
+      res.send({ clientSecret: paymentIntent.client_secret })
+    })
+
+    // get individual blogs comment
+    app.get("/comment/:blogId", async (req, res) => {
+      const {blogId} = req.params;
+      const comments = await allCommentCollection.find({blogId:blogId}).toArray();
+      res.send(comments);
+    });
+
+    // get individual blogs comment
+    app.get("/my-comment/:commentId", async (req, res) => {
+      const {commentId} = req.params;
+      const comments = await allCommentCollection.find({commentId:commentId}).toArray();
+      res.send(comments);
+    });
+
+    //  write a comment 
+    app.put("/comment", async (req, res) => {
+      const newServices = req.body;
+      const result = await allCommentCollection.updateOne({ commentId: newServices?.commentId }, { $set: newServices }, { upsert: true });
+      res.send({ success: result?.acknowledged });
+    });
+
+    // individual user's ticket booking put method
+    app.put("/ticket-booking/:id", async (req, res) => {
+      const { id } = req.params;
+      const { booking } = req.body;
+      const result = await allTicketBookingCollection.updateOne({ bookingId: id }, { $set: booking }, { upsert: true });
+      res.send({ success: result?.acknowledged });
+    })
+
+    // individual user's ticket booking get method
+    app.get("/ticket-booking/:id", async (req, res) => {
+      const { id } = req.params;
+      const result = await allTicketBookingCollection.findOne({ bookingId: id });
+      res.send(result);
+    })
+
+    // individual tickets get method by userId
+    app.get("/user-booked-ticket/:id", async (req, res) => {
+      const { id } = req.params;
+      const result = await allTicketBookingCollection.find({ userId: id }).toArray();
+      res.send(result);
+    })
+
+    // delete booked ticket api by eventId
+    app.delete("/delete-booked-ticket/:id", async (req, res) => {
+      const { id } = req.params;
+      const deleted = await allTicketBookingCollection.deleteOne({ eventId: id });
+      res.send(deleted);
+    });
+
+    // individual booked event get method by eventId
+    app.get("/event-booked-ticket/:id", async (req, res) => {
+      const { id } = req.params;
+      const result = await allTicketBookingCollection.find({ eventId: id }).toArray();
+      res.send(result);
+    })
   } finally {
   }
 }
