@@ -207,7 +207,7 @@ async function run() {
 
     // cancle service booking api
     app.delete("/delete-booking/:id", async (req, res) => {
-      const deleteSpecificBooking = await allBookingServiceCollection.deleteOne({_id: req.params.id});
+      const deleteSpecificBooking = await allBookingServiceCollection.deleteOne({ _id: req.params.id });
       res.send(deleteSpecificBooking);
     });
 
@@ -244,7 +244,28 @@ async function run() {
     });
     // all user end
 
+    // single user 
+    app.get("/single-user/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email }
+      const result = await userCollection.findOne(query)
+      res.send(result);
+    });
+    // end single user
 
+    // update user 
+    app.put("/user-update/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const user = req.body;
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      const result = await userCollection.updateOne(query,updateDoc,options)
+      res.send(result);
+    });
+    // end update user
 
     app.get("/allQuestion", async (req, res) => {
       const query = {};
@@ -284,15 +305,15 @@ async function run() {
 
     // get individual blogs comment
     app.get("/comment/:blogId", async (req, res) => {
-      const {blogId} = req.params;
-      const comments = await allCommentCollection.find({blogId:blogId}).toArray();
+      const { blogId } = req.params;
+      const comments = await allCommentCollection.find({ blogId: blogId }).toArray();
       res.send(comments);
     });
 
     // get individual blogs comment
     app.get("/my-comment/:commentId", async (req, res) => {
-      const {commentId} = req.params;
-      const comments = await allCommentCollection.find({commentId:commentId}).toArray();
+      const { commentId } = req.params;
+      const comments = await allCommentCollection.find({ commentId: commentId }).toArray();
       res.send(comments);
     });
 
