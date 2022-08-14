@@ -53,6 +53,10 @@ async function run() {
       .db("project-eventy-data-collection")
       .collection("allEvent-List");
 
+    const allEventHostRequest = client
+      .db("project-eventy-data-collection")
+      .collection("allEvent-hostRequest");
+
     const allBlogsCollection = client
       .db("project-eventy-data-collection")
       .collection("all-Blogs");
@@ -90,8 +94,8 @@ async function run() {
 
     // get sub services api
     app.get("/get-sub-services/:type", async (req, res) => {
-      const {type} = req.params
-      const result = await allSubServicesCollection.find({type}).toArray();
+      const { type } = req.params
+      const result = await allSubServicesCollection.find({ type }).toArray();
       res.send(result);
     });
 
@@ -176,7 +180,7 @@ async function run() {
       res.send(result);
     });
 
-    app.get('/get-all-booking-info', async (req, res)=>{
+    app.get('/get-all-booking-info', async (req, res) => {
       const bookingInfoAdmin = await allBookingServiceCollection.find({}).toArray()
       res.send(bookingInfoAdmin)
     })
@@ -196,8 +200,8 @@ async function run() {
     })
 
 
-     // cancle service booking api
-     app.delete("/delete-booking/:id", varifyJwt, async (req, res) => {
+    // cancle service booking api
+    app.delete("/delete-booking/:id", varifyJwt, async (req, res) => {
       const deleteSpecificBooking = await allBookingServiceCollection.deleteOne({
         _id: ObjectId(req.params.id),
       });
@@ -257,7 +261,11 @@ async function run() {
       res.send({ admin: isAdmin });
     });
 
-   
+    app.post("/addEventRequest", async (req, res) => {
+      const eventHostRequest = await allEventHostRequest.insertOne(req.body);
+      res.send(eventHostRequest);
+    });
+
 
   } finally {
   }
