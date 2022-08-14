@@ -237,7 +237,7 @@ async function run() {
   const newServices = req.body;
   const result = await writeAComment.insertOne(newServices);
   res.send(result);
-  });
+  })
 
   app.get("/comment", async (req, res) => {
     const query = {};
