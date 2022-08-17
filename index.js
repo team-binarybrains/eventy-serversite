@@ -85,9 +85,9 @@ async function run() {
       .db("project-eventy-data-collection")
       .collection("all-ticket-booking");
 
-    const writeAComment = client
+    const allCommentCollection = client
       .db("project-eventy-data-collection")
-      .collection("comment");
+      .collection("all-comment-collection");
 
 
     app.post("/post-review", async (req, res) => {
@@ -207,7 +207,7 @@ async function run() {
 
     // cancle service booking api
     app.delete("/delete-booking/:id", async (req, res) => {
-      const deleteSpecificBooking = await allBookingServiceCollection.deleteOne({_id: req.params.id});
+      const deleteSpecificBooking = await allBookingServiceCollection.deleteOne({ _id: req.params.id });
       res.send(deleteSpecificBooking);
     });
 
@@ -244,7 +244,28 @@ async function run() {
     });
     // all user end
 
+    // single user 
+    app.get("/single-user/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email }
+      const result = await userCollection.findOne(query)
+      res.send(result);
+    });
+    // end single user
 
+    // update user 
+    app.put("/user-update/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const user = req.body;
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      const result = await userCollection.updateOne(query,updateDoc,options)
+      res.send(result);
+    });
+    // end update user
 
     app.get("/allQuestion", async (req, res) => {
       const query = {};
@@ -270,33 +291,37 @@ async function run() {
     })
 
     // payment
-    // app.post('/create-payment-intent', async (req, res) => {
-    //   const service = req.body
-    //   console.log(service);
-    //   const totalPrice = parseInt(service?.eventPrice) + parseInt(service?.price)
-    //   console.log(totalPrice);
-    //   const amount = parseInt(totalPrice) * 100
-    //   const paymentIntent = await stripe.paymentIntents.create({
-    //     amount: amount,
-    //     currency: 'usd',
-    //     payment_method_types: ['card']
-    //   })
-    //   res.send({ clientSecret: paymentIntent.client_secret })
-    // })
+    app.post('/create-payment-intent', async (req, res) => {
+      const service = req.body
+      const totalPrice = service?.totalPrice
+      const amount = parseInt(totalPrice) * 100
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: 'usd',
+        payment_method_types: ['card']
+      })
+      res.send({ clientSecret: paymentIntent.client_secret })
+    })
 
+    // get individual blogs comment
+    app.get("/comment/:blogId", async (req, res) => {
+      const { blogId } = req.params;
+      const comments = await allCommentCollection.find({ blogId: blogId }).toArray();
+      res.send(comments);
+    });
 
-    app.get("/comment", async (req, res) => {
-      const query = {};
-      const cursor = writeAComment.find(query);
-      const services = await cursor.toArray();
-      res.send(services);
+    // get individual blogs comment
+    app.get("/my-comment/:commentId", async (req, res) => {
+      const { commentId } = req.params;
+      const comments = await allCommentCollection.find({ commentId: commentId }).toArray();
+      res.send(comments);
     });
 
     //  write a comment 
-    app.post("/comment", async (req, res) => {
+    app.put("/comment", async (req, res) => {
       const newServices = req.body;
-      const result = await writeAComment.insertOne(newServices);
-      res.send(result);
+      const result = await allCommentCollection.updateOne({ commentId: newServices?.commentId }, { $set: newServices }, { upsert: true });
+      res.send({ success: result?.acknowledged });
     });
 
     // individual user's ticket booking put method
