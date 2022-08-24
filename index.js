@@ -88,10 +88,10 @@ async function run() {
     const allCommentCollection = client
       .db("project-eventy-data-collection")
       .collection("all-comment-collection");
-      // for employed
-    const allEmployed = client
+      // for employee
+    const allEmployee = client
       .db("project-eventy-data-collection")
-      .collection("all-employed");
+      .collection("all-employee");
 
 
     app.post("/post-review", async (req, res) => {
@@ -364,10 +364,15 @@ async function run() {
       res.send(result);
     })
     // get employed data
-    app.get("/employed/:profession", async (req, res) => {
+    app.get("/employee/:profession", async (req, res) => {
       const { profession } = req.params;
       const find = {profession:profession}
-      const result = await allEmployed.find(find).toArray();
+      const result = await allEmployee.find(find).toArray();
+      res.send(result);
+    })
+    app.post("/employee", async (req, res) => {
+      const employee = req.body;
+      const result = await allEmployee.insertOne(employee);
       res.send(result);
     })
 
