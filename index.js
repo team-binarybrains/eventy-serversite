@@ -88,7 +88,7 @@ async function run() {
     const allCommentCollection = client
       .db("project-eventy-data-collection")
       .collection("all-comment-collection");
-      // for employee
+    // for employee
     const allEmployee = client
       .db("project-eventy-data-collection")
       .collection("all-employee");
@@ -266,7 +266,7 @@ async function run() {
       const updateDoc = {
         $set: user,
       };
-      const result = await userCollection.updateOne(query,updateDoc,options)
+      const result = await userCollection.updateOne(query, updateDoc, options)
       res.send(result);
     });
     // end update user
@@ -366,13 +366,18 @@ async function run() {
     // get employed data
     app.get("/employee/:profession", async (req, res) => {
       const { profession } = req.params;
-      const find = {profession:profession}
+      const find = { profession: profession }
       const result = await allEmployee.find(find).toArray();
       res.send(result);
     })
     app.post("/employee", async (req, res) => {
       const employee = req.body;
       const result = await allEmployee.insertOne(employee);
+      res.send(result);
+    })
+
+    app.get("/employee", async (req, res) => {
+      const result = await allEmployee.find().toArray();
       res.send(result);
     })
 
