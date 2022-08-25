@@ -381,6 +381,28 @@ async function run() {
       res.send(result);
     })
 
+    app.get("/update-employee/:id", async (req, res) => {
+      const { id } = req.params;
+      const query = { _id: ObjectId(id) };
+      const result = await allEmployee.findOne(query);
+      res.send(result);
+    })
+    app.put("/update-employee/:id", async (req, res) => {
+      const { id } = req.params;
+      const filter = { _id: ObjectId(id) };
+      const option = { upsert: true };
+      const employee = req.body;
+      const updateDoc = {
+        $set: employee,
+      }
+      const result = await allEmployee.updateOne(filter,updateDoc,option);
+      res.send(result);
+    })
+    app.delete("/delete-employee/:id", async (req, res) => {
+      const { id } = req.params;
+      const deleted = await allEmployee.deleteOne({ _id: ObjectId(id) });
+      res.send(deleted);
+    });
   } finally {
   }
 }
