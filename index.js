@@ -92,6 +92,10 @@ async function run() {
     const allCommentCollection = client
       .db("project-eventy-data-collection")
       .collection("all-comment-collection");
+      // for employee
+    const allEmployee = client
+      .db("project-eventy-data-collection")
+      .collection("all-employee");
 
 
     app.post("/post-review", async (req, res) => {
@@ -368,6 +372,19 @@ async function run() {
       const result = await allTicketBookingCollection.find({ eventId: id }).toArray();
       res.send(result);
     })
+    // get employed data
+    app.get("/employee/:profession", async (req, res) => {
+      const { profession } = req.params;
+      const find = {profession:profession}
+      const result = await allEmployee.find(find).toArray();
+      res.send(result);
+    })
+    app.post("/employee", async (req, res) => {
+      const employee = req.body;
+      const result = await allEmployee.insertOne(employee);
+      res.send(result);
+    })
+
   } finally {
   }
 }
