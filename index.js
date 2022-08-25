@@ -364,12 +364,12 @@ async function run() {
       res.send(result);
     })
     // get employed data
-    app.get("/employee/:profession", async (req, res) => {
-      const { profession } = req.params;
-      const find = { profession: profession }
-      const result = await allEmployee.find(find).toArray();
-      res.send(result);
-    })
+    // app.get("/employee/:profession", async (req, res) => {
+    //   const { profession } = req.params;
+    //   const find = { profession: profession }
+    //   const result = await allEmployee.find(find).toArray();
+    //   res.send(result);
+    // })
     app.post("/employee", async (req, res) => {
       const employee = req.body;
       const result = await allEmployee.insertOne(employee);
