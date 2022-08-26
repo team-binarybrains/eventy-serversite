@@ -88,7 +88,7 @@ async function run() {
     const allCommentCollection = client
       .db("project-eventy-data-collection")
       .collection("all-comment-collection");
-      // for employee
+    // for employee
     const allEmployee = client
       .db("project-eventy-data-collection")
       .collection("all-employee");
@@ -266,7 +266,7 @@ async function run() {
       const updateDoc = {
         $set: user,
       };
-      const result = await userCollection.updateOne(query,updateDoc,options)
+      const result = await userCollection.updateOne(query, updateDoc, options)
       res.send(result);
     });
     // end update user
@@ -364,18 +364,45 @@ async function run() {
       res.send(result);
     })
     // get employed data
-    app.get("/employee/:profession", async (req, res) => {
-      const { profession } = req.params;
-      const find = {profession:profession}
-      const result = await allEmployee.find(find).toArray();
-      res.send(result);
-    })
+    // app.get("/employee/:profession", async (req, res) => {
+    //   const { profession } = req.params;
+    //   const find = { profession: profession }
+    //   const result = await allEmployee.find(find).toArray();
+    //   res.send(result);
+    // })
     app.post("/employee", async (req, res) => {
       const employee = req.body;
       const result = await allEmployee.insertOne(employee);
       res.send(result);
     })
 
+    app.get("/employee", async (req, res) => {
+      const result = await allEmployee.find().toArray();
+      res.send(result);
+    })
+
+    app.get("/update-employee/:id", async (req, res) => {
+      const { id } = req.params;
+      const query = { _id: ObjectId(id) };
+      const result = await allEmployee.findOne(query);
+      res.send(result);
+    })
+    app.put("/update-employee/:id", async (req, res) => {
+      const { id } = req.params;
+      const filter = { _id: ObjectId(id) };
+      const option = { upsert: true };
+      const employee = req.body;
+      const updateDoc = {
+        $set: employee,
+      }
+      const result = await allEmployee.updateOne(filter,updateDoc,option);
+      res.send(result);
+    })
+    app.delete("/delete-employee/:id", async (req, res) => {
+      const { id } = req.params;
+      const deleted = await allEmployee.deleteOne({ _id: ObjectId(id) });
+      res.send(deleted);
+    });
   } finally {
   }
 }
