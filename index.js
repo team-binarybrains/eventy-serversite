@@ -93,6 +93,10 @@ async function run() {
       .db("project-eventy-data-collection")
       .collection("all-employee");
 
+    const allPaymentCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-payment");
+
 
     app.post("/post-review", async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body);
@@ -307,6 +311,14 @@ async function run() {
       res.send({ clientSecret: paymentIntent.client_secret })
     })
 
+
+    // -----
+    app.post('/payment-info', async (req, res) => {
+      const result = await allPaymentCollection.insertOne(req.body)
+      res.send(result)
+    })
+
+
     // get individual blogs comment
     app.get("/comment/:blogId", async (req, res) => {
       const { blogId } = req.params;
@@ -387,6 +399,7 @@ async function run() {
       const result = await allEmployee.findOne(query);
       res.send(result);
     })
+
     app.put("/update-employee/:id", async (req, res) => {
       const { id } = req.params;
       const filter = { _id: ObjectId(id) };
@@ -395,7 +408,7 @@ async function run() {
       const updateDoc = {
         $set: employee,
       }
-      const result = await allEmployee.updateOne(filter,updateDoc,option);
+      const result = await allEmployee.updateOne(filter, updateDoc, option);
       res.send(result);
     })
     app.delete("/delete-employee/:id", async (req, res) => {
