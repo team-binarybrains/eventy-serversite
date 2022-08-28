@@ -312,12 +312,17 @@ async function run() {
     })
 
 
-    // -----
+    // post payment to database
     app.post('/payment-info', async (req, res) => {
       const result = await allPaymentCollection.insertOne(req.body)
       res.send(result)
     })
 
+    // get all payment info
+    app.get('/get-payment', async(req, res)=>{
+      const result = await allPaymentCollection.find({}).toArray()
+      res.send(result)
+    })
 
     // get individual blogs comment
     app.get("/comment/:blogId", async (req, res) => {
