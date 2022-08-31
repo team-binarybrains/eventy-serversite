@@ -339,14 +339,8 @@ async function run() {
 
     // get all payment info
     app.get('/get-payment/:id', async (req, res) => {
-      const { id } = req.params
-      const result = await allPaymentCollection.findOne({ uniqueId: id })
-      if (result?.uniqueId) {
-        res.send({ status: true, transactionId: result?.transactionId })
-      }
-      else {
-        res.send({ status: false })
-      }
+      const result = await allPaymentCollection.find({uid: req.params.id}).toArray()
+     res.send(result)
     })
 
     // get individual blogs comment
