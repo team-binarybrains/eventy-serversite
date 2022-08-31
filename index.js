@@ -101,6 +101,10 @@ async function run() {
       .db("project-eventy-data-collection")
       .collection("all-payment");
 
+    const allTestimonialCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-testimonial");
+
 
     app.post("/post-review", async (req, res) => {
       const postReview = await allReviewCollection.insertOne(req.body);
@@ -425,11 +429,18 @@ async function run() {
       const result = await allEmployee.updateOne(filter, updateDoc, option);
       res.send(result);
     })
+
     app.delete("/delete-employee/:id", async (req, res) => {
       const { id } = req.params;
       const deleted = await allEmployee.deleteOne({ _id: ObjectId(id) });
       res.send(deleted);
     });
+
+    app.get("/allTestimonial", async (req, res) => {
+      const result = await allTestimonialCollection.find().toArray();
+      res.send(result);
+    })
+
   } finally {
   }
 }
