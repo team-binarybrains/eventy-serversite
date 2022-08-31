@@ -53,6 +53,10 @@ async function run() {
       .db("project-eventy-data-collection")
       .collection("allEvent-List");
 
+    const allEventHostRequest = client
+      .db("project-eventy-data-collection")
+      .collection("allEvent-hostRequest");
+
     const allBlogsCollection = client
       .db("project-eventy-data-collection")
       .collection("all-Blogs");
@@ -96,6 +100,10 @@ async function run() {
     const allPaymentCollection = client
       .db("project-eventy-data-collection")
       .collection("all-payment");
+
+    const allTestimonialCollection = client
+      .db("project-eventy-data-collection")
+      .collection("all-testimonial");
 
 
     app.post("/post-review", async (req, res) => {
@@ -289,6 +297,11 @@ async function run() {
       res.send({ admin: isAdmin });
     });
 
+    app.post("/addEventRequest", async (req, res) => {
+      const eventHostRequest = await allEventHostRequest.insertOne(req.body);
+      res.send(eventHostRequest);
+    });
+
 
     // get product filter by id for payment
     app.get('/payment/:id', async (req, res) => {
@@ -416,11 +429,18 @@ async function run() {
       const result = await allEmployee.updateOne(filter, updateDoc, option);
       res.send(result);
     })
+
     app.delete("/delete-employee/:id", async (req, res) => {
       const { id } = req.params;
       const deleted = await allEmployee.deleteOne({ _id: ObjectId(id) });
       res.send(deleted);
     });
+
+    app.get("/allTestimonial", async (req, res) => {
+      const result = await allTestimonialCollection.find().toArray();
+      res.send(result);
+    })
+
   } finally {
   }
 }
