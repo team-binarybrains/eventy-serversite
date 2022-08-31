@@ -227,6 +227,12 @@ async function run() {
       res.send(deleteSpecificBooking);
     });
 
+    app.delete("/delete-payment-info/:id", async (req, res) => {
+      const deleteSpecificPayment = await allPaymentCollection.deleteOne({ uniqueId: req.params.id });
+      res.send(deleteSpecificPayment);
+    });
+
+
     // all user start
     app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
@@ -332,9 +338,15 @@ async function run() {
     })
 
     // get all payment info
-    app.get('/get-payment', async(req, res)=>{
-      const result = await allPaymentCollection.find({}).toArray()
-      res.send(result)
+    app.get('/get-payment/:id', async (req, res) => {
+      const { id } = req.params
+      const result = await allPaymentCollection.findOne({ uniqueId: id })
+      if (result?.uniqueId) {
+        res.send({ status: true, transactionId: result?.transactionId })
+      }
+      else {
+        res.send({ status: false })
+      }
     })
 
     // get individual blogs comment
