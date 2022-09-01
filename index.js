@@ -337,7 +337,13 @@ async function run() {
       res.send(result)
     })
 
-    // get all payment info
+    // get all payment info for admin
+    app.get('/get-payment', async (req, res) => {
+      const result = await allPaymentCollection.find({}).toArray()
+     res.send(result)
+    })
+
+    // get payment info of an user
     app.get('/get-payment/:id', async (req, res) => {
       const result = await allPaymentCollection.find({uid: req.params.id}).toArray()
      res.send(result)
